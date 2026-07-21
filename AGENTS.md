@@ -31,6 +31,7 @@ The current July typed-ingestion milestone is limited to:
 - Loading individual typed Markdown journals.
 - Loading a directory of journals in chronological order while warning and
   continuing when one Markdown file is invalid.
+- Inspecting parsed journal summaries through a minimal standard-library CLI.
 - Adding a small set of synthetic journal entries.
 - Establishing a working pytest command.
 
@@ -42,6 +43,15 @@ load_journals(directory: Path) -> list[JournalEntry]
 ```
 
 Keep this ingestion layer limited to parsing and validation.
+
+The inspection command is:
+
+```bash
+python -m second_mind.ingest data/sample_journals
+```
+
+The CLI must reuse `load_journals`, preserve its validation warnings on standard
+error, and avoid duplicating parsing logic.
 
 ## Journal data contract
 

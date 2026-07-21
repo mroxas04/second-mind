@@ -18,6 +18,17 @@ load_journals(directory: Path) -> list[JournalEntry]
 non-Markdown files, warns and continues when a Markdown journal is invalid, and
 returns valid entries in chronological order.
 
+Inspect what the directory loader parsed:
+
+```bash
+python -m second_mind.ingest data/sample_journals
+```
+
+The command prints each valid entry's date, optional title, source filename, and
+body character count in chronological order. Validation warnings remain on
+standard error. It exits successfully when at least one valid entry loads, and
+exits with status 1 for an invalid directory or when no valid entries load.
+
 ## MVP definition
 
 The eventual local MVP will:
@@ -82,16 +93,18 @@ pytest
 ```
 
 `requirements.txt` is the single source of truth for pip dependencies.
-`environment.yml` selects Python and pip, then installs that requirements file.
-`pyproject.toml` contains pytest configuration without duplicating dependencies.
+`environment.yml` selects Python and pip, installs that requirements file, and
+installs this project in editable mode so its module commands are available.
+`pyproject.toml` contains package and pytest configuration without duplicating
+runtime dependencies.
 
 ## Repository layout
 
 ```text
 data/sample_journals/   Synthetic, version-controlled journal fixtures
 data/private_journals/  Ignored location for real local journal entries
-src/second_mind/        Python package and journal domain model
-tests/                  Foundation and sample-contract tests
+src/second_mind/        Python package, journal domain model, and inspection CLI
+tests/                  Foundation, ingestion, sample-contract, and CLI tests
 ```
 
 ## Current non-goals
