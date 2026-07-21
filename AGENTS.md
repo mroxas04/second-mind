@@ -22,24 +22,26 @@ The MVP must:
 
 ## Current milestone
 
-The current July foundation and typed-ingestion milestone is limited to:
+The current July typed-ingestion milestone is limited to:
 
 - Establishing the repository and Python 3.14 Conda environment.
 - Documenting the local-first privacy model.
 - Defining the journal filename and content contract.
 - Defining the typed `JournalEntry` domain model.
+- Loading individual typed Markdown journals.
+- Loading a directory of journals in chronological order while warning and
+  continuing when one Markdown file is invalid.
 - Adding a small set of synthetic journal entries.
 - Establishing a working pytest command.
 
-This implementation pass covers repository foundation and the journal domain
-model only. The immediately following July slice will implement:
+The public ingestion interface is:
 
 ```python
 load_journal(path: Path) -> JournalEntry
 load_journals(directory: Path) -> list[JournalEntry]
 ```
 
-Do not implement those functions during the current pass.
+Keep this ingestion layer limited to parsing and validation.
 
 ## Journal data contract
 
@@ -101,7 +103,6 @@ Tests may inspect synthetic samples but must never inspect private journal files
 
 Do not add or implement:
 
-- Journal file-loading functions.
 - Chunking, embeddings, retrieval, or RAG.
 - OCR or image processing.
 - A vector database or generated index.
@@ -110,4 +111,5 @@ Do not add or implement:
 - A web framework, API server, or web UI.
 - Cloud services or telemetry.
 - Production ingestion pipelines.
+- Metadata beyond date, title, source path, and body.
 - Model downloads or platform-specific Conda lockfiles.

@@ -5,18 +5,18 @@ entries into grounded answers with dates and source citations.
 
 ## Current status
 
-The current July foundation and typed-ingestion milestone covers only the
-repository foundation, privacy model, journal file contract, typed journal
-domain model, synthetic sample data, and a working test command.
-
-The immediately following July slice will add:
+The current July typed-ingestion milestone includes the repository foundation,
+privacy model, journal file contract, immutable journal domain model, synthetic
+sample data, and two typed Markdown loading functions:
 
 ```python
 load_journal(path: Path) -> JournalEntry
 load_journals(directory: Path) -> list[JournalEntry]
 ```
 
-Those ingestion functions are intentionally not implemented in this pass.
+`load_journal` validates and loads one journal. `load_journals` ignores
+non-Markdown files, warns and continues when a Markdown journal is invalid, and
+returns valid entries in chronological order.
 
 ## MVP definition
 
@@ -41,14 +41,14 @@ YYYY-MM-DD-optional-slug.md
 ```
 
 The date is authoritative and comes from the filename. Both `2026-07-20.md`
-and `2026-07-20-project-notes.md` are valid examples. A future loader will
-extract an optional title from the first Markdown H1 (`# Title`). The remaining
-Markdown content will become the body. Files do not use YAML front matter, so
-the project does not need a YAML dependency.
+and `2026-07-20-project-notes.md` are valid examples. The loader extracts an
+optional title from the first Markdown H1 (`# Title`). When a title is present,
+only that line and its line terminator are removed; all remaining text is
+preserved as the body. Without an H1, the complete file is the body. Files do
+not use YAML front matter, so the project does not need a YAML dependency.
 
 The typed domain model is `second_mind.JournalEntry`, with an entry date,
-optional title, body, and source path. Loading files into that model belongs to
-the next implementation slice.
+optional title, body, and source path.
 
 ## Privacy
 
@@ -96,6 +96,7 @@ tests/                  Foundation and sample-contract tests
 
 ## Current non-goals
 
-This milestone does not include file-loading functions, embeddings, RAG, OCR,
-a vector database, an LLM interface, agents, a web UI or framework, cloud
-services, generated indexes, or model downloads.
+This milestone does not include chunking, embeddings, retrieval, RAG, OCR, a
+vector database, an LLM interface, agents, a web UI or framework, cloud
+services, generated indexes, model downloads, or metadata beyond date, title,
+path, and body.

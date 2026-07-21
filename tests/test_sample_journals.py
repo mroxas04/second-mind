@@ -4,6 +4,8 @@ from datetime import date
 from pathlib import Path
 import re
 
+from second_mind import load_journals
+
 
 SAMPLE_DIRECTORY = Path(__file__).parents[1] / "data" / "sample_journals"
 FILENAME_PATTERN = re.compile(
@@ -37,3 +39,12 @@ def test_samples_are_marked_synthetic_and_have_content() -> None:
         assert lines[0] != "# "
         assert SYNTHETIC_MARKER in text
         assert text.partition(SYNTHETIC_MARKER)[2].strip()
+
+
+def test_sample_journals_load_in_chronological_order() -> None:
+    entries = load_journals(SAMPLE_DIRECTORY)
+
+    assert [entry.entry_date for entry in entries] == sorted(
+        entry.entry_date for entry in entries
+    )
+    assert len(entries) == 3
