@@ -1,0 +1,50 @@
+# Private journal data
+/data/private_journals/*
+!/data/private_journals/.gitkeep
+/notes/
+
+# Generated indexes and model artifacts
+/data/generated/
+/data/indexes/
+/data/models/
+/indexes/
+/models/
+*.ann
+*.faiss
+*.gguf
+*.index
+*.onnx
+*.safetensors
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Python caches, test output, and build output
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+build/
+dist/
+*.egg-info/
+
+# Local Python and Conda environments
+.conda/
+.direnv/
+.venv/
+venv/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+*.swp
