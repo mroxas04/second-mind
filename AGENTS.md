@@ -22,18 +22,22 @@ The MVP must:
 
 ## Current milestone
 
-The current July typed-ingestion milestone is limited to:
+The current August local-indexing milestone builds directly on the completed
+typed-ingestion layer and is limited to:
 
-- Establishing the repository and Python 3.14 Conda environment.
-- Documenting the local-first privacy model.
-- Defining the journal filename and content contract.
-- Defining the typed `JournalEntry` domain model.
-- Loading individual typed Markdown journals.
-- Loading a directory of journals in chronological order while warning and
-  continuing when one Markdown file is invalid.
-- Inspecting parsed journal summaries through a minimal standard-library CLI.
-- Adding a small set of synthetic journal entries.
-- Establishing a working pytest command.
+- Deterministically chunking the parsed bodies of loaded journal entries.
+- Preserving journal date, source path, optional title, and chunk order on every
+  chunk.
+- Producing embeddings locally without hosted APIs or transmitting journal
+  content.
+- Persisting chunks, embeddings, and metadata in a gitignored local index.
+- Re-indexing journals without creating duplicate copies of unchanged source
+  chunks.
+- Providing a minimal command-line indexing entry point.
+- Providing a minimal similarity-query function or command for retrieval
+  verification, including source metadata in results.
+- Testing the pipeline offline with deterministic lightweight embeddings where
+  appropriate.
 
 The public ingestion interface is:
 
@@ -113,13 +117,15 @@ Tests may inspect synthetic samples but must never inspect private journal files
 
 Do not add or implement:
 
-- Chunking, embeddings, retrieval, or RAG.
 - OCR or image processing.
-- A vector database or generated index.
 - An LLM interface or model integration.
 - Agents or orchestration.
 - A web framework, API server, or web UI.
 - Cloud services or telemetry.
 - Production ingestion pipelines.
-- Metadata beyond date, title, source path, and body.
+- Metadata beyond what is needed to identify, order, persist, and retrieve
+  journal chunks with their date, title, source, and text.
 - Model downloads or platform-specific Conda lockfiles.
+- Conversational RAG or answer generation.
+- Knowledge graphs, summarization, reranking, hybrid search, background
+  watchers, or filesystem automation.

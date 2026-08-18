@@ -5,9 +5,8 @@ entries into grounded answers with dates and source citations.
 
 ## Current status
 
-The current July typed-ingestion milestone includes the repository foundation,
-privacy model, journal file contract, immutable journal domain model, synthetic
-sample data, and two typed Markdown loading functions:
+The August local-indexing milestone builds on the typed-ingestion foundation.
+The public Markdown loading functions remain:
 
 ```python
 load_journal(path: Path) -> JournalEntry
@@ -17,6 +16,13 @@ load_journals(directory: Path) -> list[JournalEntry]
 `load_journal` validates and loads one journal. `load_journals` ignores
 non-Markdown files, warns and continues when a Markdown journal is invalid, and
 returns valid entries in chronological order.
+
+Loaded bodies can now be divided into deterministic, overlapping chunks. Each
+chunk retains its journal date, source path, optional title, and source-local
+chunk index. A dependency-free feature-hashing backend embeds the chunks
+locally, and a SQLite index persists their text, vectors, and metadata under
+the gitignored `data/indexes/` directory. Re-indexing unchanged source chunks
+skips them instead of creating duplicates.
 
 Inspect what the directory loader parsed:
 
@@ -28,6 +34,22 @@ The command prints each valid entry's date, optional title, source filename, and
 body character count in chronological order. Validation warnings remain on
 standard error. It exits successfully when at least one valid entry loads, and
 exits with status 1 for an invalid directory or when no valid entries load.
+
+Index the synthetic sample journals using the default local index:
+
+```bash
+python -m second_mind.index data/sample_journals
+```
+
+Query the index and return the three closest chunks with citation metadata:
+
+```bash
+python -m second_mind.index --query library
+```
+
+Use `--index PATH` on either command to select another SQLite file. Indexing
+also accepts `--chunk-size` and `--overlap`; both are measured in characters.
+Querying accepts `--limit`.
 
 ## MVP definition
 
@@ -68,7 +90,8 @@ optional title, body, and source path.
 - Never commit, inspect, log, or transmit real private journal content.
 - Keep generated indexes, model files, secrets, and local environment files out
   of Git.
-- The project is local-first and does not use cloud services.
+- Embedding, persistence, and querying run locally without cloud services,
+  telemetry, hosted APIs, or journal-data transmission.
 
 ## Environment
 
@@ -103,13 +126,16 @@ runtime dependencies.
 ```text
 data/sample_journals/   Synthetic, version-controlled journal fixtures
 data/private_journals/  Ignored location for real local journal entries
-src/second_mind/        Python package, journal domain model, and inspection CLI
+data/indexes/           Ignored local SQLite indexes
+src/second_mind/        Ingestion, chunking, embeddings, index, and CLIs
 tests/                  Foundation, ingestion, sample-contract, and CLI tests
 ```
 
 ## Current non-goals
 
-This milestone does not include chunking, embeddings, retrieval, RAG, OCR, a
-vector database, an LLM interface, agents, a web UI or framework, cloud
-services, generated indexes, model downloads, or metadata beyond date, title,
-path, and body.
+This milestone does not include conversational RAG, answer generation, an LLM
+interface, agents, a web UI or framework, cloud services, model downloads,
+semantic reranking, hybrid search, background watchers, OCR, or handwritten
+notes. The feature-hashing vectors provide deliberately small lexical retrieval
+for milestone verification; the isolated embedding interface allows a future
+local semantic model to replace them.
