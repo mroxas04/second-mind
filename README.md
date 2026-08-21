@@ -5,9 +5,9 @@ entries into grounded answers with dates and source citations.
 
 ## Current status
 
-The November MVP v0.1 stabilization milestone adds a single repeatable local
-workflow on top of the completed ingestion, indexing, cited retrieval, and
-five-question evaluation foundations.
+The December maintenance milestone adds a repeatable, verified local backup
+workflow on top of the stabilized MVP. Backup destinations remain an explicit
+user choice; Second Mind does not select or transmit data to a cloud service.
 
 ## Quick start
 
@@ -33,6 +33,35 @@ After installing the editable project, the same workflow is available as:
 second-mind data/sample_journals \
   --question "What reserved book did I pick up?"
 ```
+
+## Local backups
+
+First refresh the index with the normal MVP command. Then create a timestamped
+snapshot in a local directory or mounted external drive that you choose:
+
+```bash
+python -m second_mind.backup create \
+  data/sample_journals /path/to/local/backups \
+  --index data/indexes/journals.sqlite3
+```
+
+The command copies the journal directory and current SQLite index, writes a
+manifest containing relative paths, sizes, and SHA-256 checksums, verifies the
+new snapshot, and reports only counts and paths. It never overwrites an existing
+snapshot. Use `--name NAME` when a stable unique snapshot name is useful for an
+automated local workflow.
+
+Verify any snapshot again without reading journal text into the console:
+
+```bash
+python -m second_mind.backup verify \
+  /path/to/local/backups/second-mind-YYYYMMDDTHHMMSSZ
+```
+
+After editable installation, `second-mind-backup` provides the same `create`
+and `verify` subcommands. Store real-journal snapshots only on a trusted local
+or encrypted external volume. Full restore automation and a clean restore
+rehearsal remain intentionally deferred to M059.
 
 ## Component commands
 
@@ -188,16 +217,17 @@ runtime dependencies.
 data/sample_journals/   Synthetic, version-controlled journal fixtures
 data/private_journals/  Ignored location for real local journal entries
 data/indexes/           Ignored local SQLite indexes
-src/second_mind/        Ingestion, chunking, embeddings, index, and CLIs
+src/second_mind/        Ingestion, retrieval, backup logic, and CLIs
 tests/                  Foundation, ingestion, sample-contract, and CLI tests
 ```
 
 ## Current non-goals
 
-This milestone does not include conversational RAG, abstractive answer
-synthesis, an LLM interface, agents, a web UI or framework, cloud services,
-model downloads, semantic reranking, hybrid search, real or private journal
-evaluation, usage logging, background watchers, OCR, or handwritten notes. The
-feature-hashing vectors provide deliberately small lexical retrieval for
-milestone verification; the isolated embedding interface allows a future local
-semantic model to replace them.
+This milestone does not include restore automation, a clean restore rehearsal,
+scheduled/background backups, cloud storage, encryption or key management,
+conversational RAG, abstractive answer synthesis, an LLM interface, agents, a
+web UI or framework, model downloads, semantic reranking, hybrid search, real
+or private journal evaluation, usage logging, background watchers, OCR, or
+handwritten notes. The feature-hashing vectors provide deliberately small
+lexical retrieval for milestone verification; the isolated embedding interface
+allows a future local semantic model to replace them.

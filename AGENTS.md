@@ -22,22 +22,48 @@ The MVP must:
 
 ## Current milestone
 
-The current November stabilization milestone builds directly on the completed
-typed-ingestion, local-indexing, cited-retrieval, and five-question evaluation
-layers and is limited to:
+The current December maintenance milestone builds directly on the stabilized
+local MVP and is limited to:
 
-- Providing one stable local command that refreshes the journal index and
-  answers one or more natural-language questions.
-- Returning a conservative extractive answer from the top supporting passage,
-  together with its journal date, source filename, optional title, and chunk.
-- Returning an explicit insufficient-evidence refusal as a successful outcome
-  instead of inventing an answer.
-- Persisting the local index so unchanged journals are skipped on repeated runs.
-- Keeping advanced ingestion, retrieval, and evaluation commands available for
-  focused diagnostics.
-- Documenting a repeatable local quick start in the README.
-- Testing answer, citation, refusal, error, and repeated-run behavior offline
-  using only fictional journal entries.
+- Keeping the stable MVP command as the repeatable workflow for adding new
+  journal entries and refreshing the local index.
+- Creating timestamped backup snapshots in an explicitly selected local or
+  mounted external-drive destination.
+- Copying the journal directory and current SQLite index without logging journal
+  contents.
+- Recording relative paths, file sizes, roles, and SHA-256 checksums in a local
+  manifest.
+- Verifying every copied file against the manifest before completing a backup.
+- Refusing to overwrite an existing snapshot or place a backup inside the
+  journal directory.
+- Providing focused create and verify backup commands.
+- Documenting the repeatable local backup workflow and its privacy boundaries.
+- Testing the backup workflow offline using only fictional journal entries and
+  synthetic index files.
+
+The public backup interfaces are:
+
+```python
+create_backup(
+    journal_directory: Path,
+    destination: Path,
+    index_path: Path = DEFAULT_INDEX_PATH,
+    *,
+    snapshot_name: str | None = None,
+) -> BackupSummary
+
+verify_backup(snapshot_path: Path) -> BackupVerification
+```
+
+The local backup commands are:
+
+```bash
+python -m second_mind.backup create \
+  data/sample_journals /path/to/local/backups \
+  --index data/indexes/journals.sqlite3
+
+python -m second_mind.backup verify /path/to/local/backup-snapshot
+```
 
 The public stabilized workflow is:
 
@@ -146,5 +172,8 @@ Do not add or implement:
 - Conversational RAG, abstractive answer synthesis, or an LLM interface.
 - Real or private journal evaluation, usage logging, and broader refusal-policy
   work.
+- Restore automation or a clean restore rehearsal; those remain part of M059.
+- Scheduled or background backups.
+- Cloud backup services, application-managed encryption, or key management.
 - Knowledge graphs, summarization, reranking, hybrid search, background
   watchers, or filesystem automation.
