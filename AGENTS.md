@@ -22,39 +22,64 @@ The MVP must:
 
 ## Current milestone
 
-The current October five-question retrieval evaluation builds directly on the
-completed typed-ingestion, local-indexing, and cited-retrieval layers and is
-limited to:
+The current December maintenance milestone builds directly on the stabilized
+local MVP and is limited to:
 
-- Loading exactly five natural-language evaluation cases from a small local
-  JSON file.
-- Building a fresh temporary local index for every evaluation run.
-- Scoring top-passage retrieval accuracy for evidence-positive questions.
-- Scoring journal date, source filename, optional title, and chunk-order
-  citation accuracy.
-- Scoring appropriate refusal for a question with no supporting passage.
-- Returning a failing command-line exit status when any applicable criterion
-  misses.
-- Keeping the committed evaluation privacy-safe by using only fictional entries
-  in `data/sample_journals/`.
-- Keeping evaluation local and deterministic without hosted APIs, telemetry, or
-  journal-data transmission.
+- Keeping the stable MVP command as the repeatable workflow for adding new
+  journal entries and refreshing the local index.
+- Creating timestamped backup snapshots in an explicitly selected local or
+  mounted external-drive destination.
+- Copying the journal directory and current SQLite index without logging journal
+  contents.
+- Recording relative paths, file sizes, roles, and SHA-256 checksums in a local
+  manifest.
+- Verifying every copied file against the manifest before completing a backup.
+- Refusing to overwrite an existing snapshot or place a backup inside the
+  journal directory.
+- Providing focused create and verify backup commands.
+- Documenting the repeatable local backup workflow and its privacy boundaries.
+- Testing the backup workflow offline using only fictional journal entries and
+  synthetic index files.
 
-The public evaluation interface is:
+The public backup interfaces are:
 
 ```python
-evaluate_retrieval(
+create_backup(
     journal_directory: Path,
-    cases_path: Path,
-) -> EvaluationSummary
+    destination: Path,
+    index_path: Path = DEFAULT_INDEX_PATH,
+    *,
+    snapshot_name: str | None = None,
+) -> BackupSummary
+
+verify_backup(snapshot_path: Path) -> BackupVerification
 ```
 
-The sample evaluation command is:
+The local backup commands are:
 
 ```bash
-python -m second_mind.evaluation \
-  data/sample_journals \
-  data/sample_journals/retrieval_evaluation.json
+python -m second_mind.backup create \
+  data/sample_journals /path/to/local/backups \
+  --index data/indexes/journals.sqlite3
+
+python -m second_mind.backup verify /path/to/local/backup-snapshot
+```
+
+The public stabilized workflow is:
+
+```python
+run_session(
+    journal_directory: Path,
+    questions: Sequence[str],
+    index_path: Path = DEFAULT_INDEX_PATH,
+) -> MvpSession
+```
+
+The local MVP command is:
+
+```bash
+python -m second_mind data/sample_journals \
+  --question "What reserved book did I pick up?"
 ```
 
 The public ingestion interface is:
@@ -144,7 +169,11 @@ Do not add or implement:
 - Metadata beyond what is needed to identify, order, persist, and retrieve
   journal chunks with their date, title, source, and text.
 - Model downloads or platform-specific Conda lockfiles.
-- Conversational RAG, answer synthesis, or an LLM interface.
-- Real or private journal evaluation and broader refusal-policy work.
+- Conversational RAG, abstractive answer synthesis, or an LLM interface.
+- Real or private journal evaluation, usage logging, and broader refusal-policy
+  work.
+- Restore automation or a clean restore rehearsal; those remain part of M059.
+- Scheduled or background backups.
+- Cloud backup services, application-managed encryption, or key management.
 - Knowledge graphs, summarization, reranking, hybrid search, background
   watchers, or filesystem automation.
