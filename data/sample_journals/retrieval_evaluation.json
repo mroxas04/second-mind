@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "id": "Q1",
+      "question": "What reserved book did I pick up?",
+      "expected_source": "2026-07-03-library-visit.md",
+      "expected_date": "2026-07-03",
+      "expected_title": "Library visit",
+      "expected_chunk": 0
+    },
+    {
+      "id": "Q2",
+      "question": "Which planter did I move?",
+      "expected_source": "2026-07-11-garden-planning.md",
+      "expected_date": "2026-07-11",
+      "expected_title": "Garden planning",
+      "expected_chunk": 0
+    },
+    {
+      "id": "Q3",
+      "question": "What days did I decide to water basil?",
+      "expected_source": "2026-07-11-garden-planning.md",
+      "expected_date": "2026-07-11",
+      "expected_title": "Garden planning",
+      "expected_chunk": 0
+    },
+    {
+      "id": "Q4",
+      "question": "What spice changed the lentil soup?",
+      "expected_source": "2026-07-18-cooking-class.md",
+      "expected_date": "2026-07-18",
+      "expected_title": "Cooking class",
+      "expected_chunk": 0
+    },
+    {
+      "id": "Q5",
+      "question": "Which mountain trail did I hike?",
+      "expected_source": null,
+      "expected_date": null,
+      "expected_title": null,
+      "expected_chunk": null
+    }
+  ]
+}
