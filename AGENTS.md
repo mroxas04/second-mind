@@ -22,47 +22,43 @@ The MVP must:
 
 ## Current milestone
 
-The current December maintenance milestone builds directly on the stabilized
-local MVP and is limited to:
+The current January method-formation milestone builds directly on the stable,
+locally backed-up MVP and is limited to:
 
-- Keeping the stable MVP command as the repeatable workflow for adding new
-  journal entries and refreshing the local index.
-- Creating timestamped backup snapshots in an explicitly selected local or
-  mounted external-drive destination.
-- Copying the journal directory and current SQLite index without logging journal
-  contents.
-- Recording relative paths, file sizes, roles, and SHA-256 checksums in a local
-  manifest.
-- Verifying every copied file against the manifest before completing a backup.
-- Refusing to overwrite an existing snapshot or place a backup inside the
-  journal directory.
-- Providing focused create and verify backup commands.
-- Documenting the repeatable local backup workflow and its privacy boundaries.
-- Testing the backup workflow offline using only fictional journal entries and
-  synthetic index files.
+- Recording at least ten real-use outcomes through an explicit local command.
+- Storing only a UTC timestamp and one predefined outcome category per use.
+- Providing successful-answer and successful-refusal categories.
+- Providing fixed failure categories for missed evidence, wrong passages,
+  unsupported answers, incorrect refusals, citation problems, stale indexes,
+  command errors, and other non-sensitive failures.
+- Rejecting extra fields so questions, answers, journal text, source paths,
+  titles, citations, and free-form notes cannot enter the log format.
+- Keeping the generated outcome log local and ignored by Git.
+- Reporting progress toward ten uses and ranking up to three failure categories
+  by observed frequency.
+- Testing the logger and report offline with synthetic outcome records only.
 
-The public backup interfaces are:
+The public usage-evidence interfaces are:
 
 ```python
-create_backup(
-    journal_directory: Path,
-    destination: Path,
-    index_path: Path = DEFAULT_INDEX_PATH,
+record_usage(
+    category: UsageCategory,
+    log_path: Path = DEFAULT_USAGE_LOG_PATH,
     *,
-    snapshot_name: str | None = None,
-) -> BackupSummary
+    recorded_at: datetime | None = None,
+) -> UsageReport
 
-verify_backup(snapshot_path: Path) -> BackupVerification
+generate_usage_report(
+    log_path: Path = DEFAULT_USAGE_LOG_PATH,
+) -> UsageReport
 ```
 
-The local backup commands are:
+The local usage-evidence commands are:
 
 ```bash
-python -m second_mind.backup create \
-  data/sample_journals /path/to/local/backups \
-  --index data/indexes/journals.sqlite3
-
-python -m second_mind.backup verify /path/to/local/backup-snapshot
+python -m second_mind.usage categories
+python -m second_mind.usage record correct-answer
+python -m second_mind.usage report
 ```
 
 The public stabilized workflow is:
@@ -170,8 +166,10 @@ Do not add or implement:
   journal chunks with their date, title, source, and text.
 - Model downloads or platform-specific Conda lockfiles.
 - Conversational RAG, abstractive answer synthesis, or an LLM interface.
-- Real or private journal evaluation, usage logging, and broader refusal-policy
-  work.
+- Real or private journal-content evaluation and broader refusal-policy work.
+- Automatic/background usage tracking or logging from the question workflow.
+- Storing questions, answers, citations, source paths, titles, or free-form
+  notes in usage evidence.
 - Restore automation or a clean restore rehearsal; those remain part of M059.
 - Scheduled or background backups.
 - Cloud backup services, application-managed encryption, or key management.

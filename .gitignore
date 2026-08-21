@@ -7,6 +7,7 @@
 /data/generated/
 /data/indexes/
 /data/models/
+/data/usage/
 /indexes/
 /models/
 *.ann
