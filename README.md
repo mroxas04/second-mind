@@ -5,8 +5,8 @@ entries into grounded answers with dates and source citations.
 
 ## Current status
 
-The September natural-language retrieval milestone builds on the completed
-typed-ingestion and local-indexing foundations.
+The October five-question retrieval evaluation milestone builds on the
+completed typed-ingestion, local-indexing, and cited-retrieval foundations.
 The public Markdown loading functions remain:
 
 ```python
@@ -66,6 +66,20 @@ source text, preventing feature-hash collisions from surfacing unsupported
 passages. It exits with status 1 instead of returning zero-evidence passages.
 This milestone retrieves cited source text only; it does not synthesize an
 answer.
+
+Run the committed privacy-safe scorecard against the fictional sample journals:
+
+```bash
+python -m second_mind.evaluation \
+  data/sample_journals \
+  data/sample_journals/retrieval_evaluation.json
+```
+
+The evaluator creates a fresh temporary index, runs exactly five questions, and
+scores top-passage retrieval, source/date/title/chunk citation metadata, and an
+insufficient-evidence refusal. It exits with status 1 if any applicable check
+fails. The committed scorecard contains four evidence-positive questions and
+one refusal question; it never requires private journal content.
 
 ## MVP definition
 
@@ -151,7 +165,7 @@ tests/                  Foundation, ingestion, sample-contract, and CLI tests
 
 This milestone does not include conversational RAG, answer generation, an LLM
 interface, agents, a web UI or framework, cloud services, model downloads,
-semantic reranking, hybrid search, the five-question real-journal evaluation,
+semantic reranking, hybrid search, real or private journal evaluation,
 background watchers, OCR, or handwritten notes. The feature-hashing vectors
 provide deliberately small lexical retrieval for milestone verification; the
 isolated embedding interface allows a future local semantic model to replace

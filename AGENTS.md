@@ -22,40 +22,39 @@ The MVP must:
 
 ## Current milestone
 
-The current September natural-language retrieval milestone builds directly on
-the completed typed-ingestion and local-indexing layers and is limited to:
+The current October five-question retrieval evaluation builds directly on the
+completed typed-ingestion, local-indexing, and cited-retrieval layers and is
+limited to:
 
-- Accepting a natural-language question through a small public function and
-  command-line entry point.
-- Retrieving ranked, evidence-positive passages from the existing local index.
-- Requiring an informative question term to overlap the cited source so
-  feature-hash collisions cannot count as sufficient evidence.
-- Returning the journal date, source filename, optional title, and chunk order
-  as an explicit citation for every passage.
-- Returning no passage when the local similarity evidence is insufficient.
-- Keeping retrieval local and deterministic without hosted APIs or journal-data
-  transmission.
-- Preserving the existing indexing interface and keeping ingestion limited to
-  parsing and validation.
-- Testing the retrieval pipeline offline with synthetic journal content and
-  deterministic lightweight embeddings where appropriate.
+- Loading exactly five natural-language evaluation cases from a small local
+  JSON file.
+- Building a fresh temporary local index for every evaluation run.
+- Scoring top-passage retrieval accuracy for evidence-positive questions.
+- Scoring journal date, source filename, optional title, and chunk-order
+  citation accuracy.
+- Scoring appropriate refusal for a question with no supporting passage.
+- Returning a failing command-line exit status when any applicable criterion
+  misses.
+- Keeping the committed evaluation privacy-safe by using only fictional entries
+  in `data/sample_journals/`.
+- Keeping evaluation local and deterministic without hosted APIs, telemetry, or
+  journal-data transmission.
 
-The public retrieval interface is:
+The public evaluation interface is:
 
 ```python
-retrieve_passages(
-    question: str,
-    index_path: Path,
-    *,
-    limit: int = 3,
-) -> list[RetrievedPassage]
+evaluate_retrieval(
+    journal_directory: Path,
+    cases_path: Path,
+) -> EvaluationSummary
 ```
 
-The retrieval command is:
+The sample evaluation command is:
 
 ```bash
-python -m second_mind.retrieval \
-  "What book did I pick up at the library?"
+python -m second_mind.evaluation \
+  data/sample_journals \
+  data/sample_journals/retrieval_evaluation.json
 ```
 
 The public ingestion interface is:
@@ -146,6 +145,6 @@ Do not add or implement:
   journal chunks with their date, title, source, and text.
 - Model downloads or platform-specific Conda lockfiles.
 - Conversational RAG, answer synthesis, or an LLM interface.
-- The five-question real-journal evaluation and broader refusal-policy work.
+- Real or private journal evaluation and broader refusal-policy work.
 - Knowledge graphs, summarization, reranking, hybrid search, background
   watchers, or filesystem automation.
