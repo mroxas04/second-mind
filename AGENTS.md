@@ -22,22 +22,41 @@ The MVP must:
 
 ## Current milestone
 
-The current August local-indexing milestone builds directly on the completed
-typed-ingestion layer and is limited to:
+The current September natural-language retrieval milestone builds directly on
+the completed typed-ingestion and local-indexing layers and is limited to:
 
-- Deterministically chunking the parsed bodies of loaded journal entries.
-- Preserving journal date, source path, optional title, and chunk order on every
-  chunk.
-- Producing embeddings locally without hosted APIs or transmitting journal
-  content.
-- Persisting chunks, embeddings, and metadata in a gitignored local index.
-- Re-indexing journals without creating duplicate copies of unchanged source
-  chunks.
-- Providing a minimal command-line indexing entry point.
-- Providing a minimal similarity-query function or command for retrieval
-  verification, including source metadata in results.
-- Testing the pipeline offline with deterministic lightweight embeddings where
-  appropriate.
+- Accepting a natural-language question through a small public function and
+  command-line entry point.
+- Retrieving ranked, evidence-positive passages from the existing local index.
+- Requiring an informative question term to overlap the cited source so
+  feature-hash collisions cannot count as sufficient evidence.
+- Returning the journal date, source filename, optional title, and chunk order
+  as an explicit citation for every passage.
+- Returning no passage when the local similarity evidence is insufficient.
+- Keeping retrieval local and deterministic without hosted APIs or journal-data
+  transmission.
+- Preserving the existing indexing interface and keeping ingestion limited to
+  parsing and validation.
+- Testing the retrieval pipeline offline with synthetic journal content and
+  deterministic lightweight embeddings where appropriate.
+
+The public retrieval interface is:
+
+```python
+retrieve_passages(
+    question: str,
+    index_path: Path,
+    *,
+    limit: int = 3,
+) -> list[RetrievedPassage]
+```
+
+The retrieval command is:
+
+```bash
+python -m second_mind.retrieval \
+  "What book did I pick up at the library?"
+```
 
 The public ingestion interface is:
 
@@ -126,6 +145,7 @@ Do not add or implement:
 - Metadata beyond what is needed to identify, order, persist, and retrieve
   journal chunks with their date, title, source, and text.
 - Model downloads or platform-specific Conda lockfiles.
-- Conversational RAG or answer generation.
+- Conversational RAG, answer synthesis, or an LLM interface.
+- The five-question real-journal evaluation and broader refusal-policy work.
 - Knowledge graphs, summarization, reranking, hybrid search, background
   watchers, or filesystem automation.
