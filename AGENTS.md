@@ -22,39 +22,38 @@ The MVP must:
 
 ## Current milestone
 
-The current October five-question retrieval evaluation builds directly on the
-completed typed-ingestion, local-indexing, and cited-retrieval layers and is
-limited to:
+The current November stabilization milestone builds directly on the completed
+typed-ingestion, local-indexing, cited-retrieval, and five-question evaluation
+layers and is limited to:
 
-- Loading exactly five natural-language evaluation cases from a small local
-  JSON file.
-- Building a fresh temporary local index for every evaluation run.
-- Scoring top-passage retrieval accuracy for evidence-positive questions.
-- Scoring journal date, source filename, optional title, and chunk-order
-  citation accuracy.
-- Scoring appropriate refusal for a question with no supporting passage.
-- Returning a failing command-line exit status when any applicable criterion
-  misses.
-- Keeping the committed evaluation privacy-safe by using only fictional entries
-  in `data/sample_journals/`.
-- Keeping evaluation local and deterministic without hosted APIs, telemetry, or
-  journal-data transmission.
+- Providing one stable local command that refreshes the journal index and
+  answers one or more natural-language questions.
+- Returning a conservative extractive answer from the top supporting passage,
+  together with its journal date, source filename, optional title, and chunk.
+- Returning an explicit insufficient-evidence refusal as a successful outcome
+  instead of inventing an answer.
+- Persisting the local index so unchanged journals are skipped on repeated runs.
+- Keeping advanced ingestion, retrieval, and evaluation commands available for
+  focused diagnostics.
+- Documenting a repeatable local quick start in the README.
+- Testing answer, citation, refusal, error, and repeated-run behavior offline
+  using only fictional journal entries.
 
-The public evaluation interface is:
+The public stabilized workflow is:
 
 ```python
-evaluate_retrieval(
+run_session(
     journal_directory: Path,
-    cases_path: Path,
-) -> EvaluationSummary
+    questions: Sequence[str],
+    index_path: Path = DEFAULT_INDEX_PATH,
+) -> MvpSession
 ```
 
-The sample evaluation command is:
+The local MVP command is:
 
 ```bash
-python -m second_mind.evaluation \
-  data/sample_journals \
-  data/sample_journals/retrieval_evaluation.json
+python -m second_mind data/sample_journals \
+  --question "What reserved book did I pick up?"
 ```
 
 The public ingestion interface is:
@@ -144,7 +143,8 @@ Do not add or implement:
 - Metadata beyond what is needed to identify, order, persist, and retrieve
   journal chunks with their date, title, source, and text.
 - Model downloads or platform-specific Conda lockfiles.
-- Conversational RAG, answer synthesis, or an LLM interface.
-- Real or private journal evaluation and broader refusal-policy work.
+- Conversational RAG, abstractive answer synthesis, or an LLM interface.
+- Real or private journal evaluation, usage logging, and broader refusal-policy
+  work.
 - Knowledge graphs, summarization, reranking, hybrid search, background
   watchers, or filesystem automation.
