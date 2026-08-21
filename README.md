@@ -5,7 +5,8 @@ entries into grounded answers with dates and source citations.
 
 ## Current status
 
-The August local-indexing milestone builds on the typed-ingestion foundation.
+The September natural-language retrieval milestone builds on the completed
+typed-ingestion and local-indexing foundations.
 The public Markdown loading functions remain:
 
 ```python
@@ -50,6 +51,21 @@ python -m second_mind.index --query library
 Use `--index PATH` on either command to select another SQLite file. Indexing
 also accepts `--chunk-size` and `--overlap`; both are measured in characters.
 Querying accepts `--limit`.
+
+Ask a natural-language question and return only evidence-positive passages with
+explicit journal date, source filename, optional title, and chunk citations:
+
+```bash
+python -m second_mind.retrieval \
+  "What book did I pick up at the library?"
+```
+
+The retrieval command accepts `--index`, `--limit`, and `--minimum-score`. It
+ignores common question words and requires an informative term to overlap the
+source text, preventing feature-hash collisions from surfacing unsupported
+passages. It exits with status 1 instead of returning zero-evidence passages.
+This milestone retrieves cited source text only; it does not synthesize an
+answer.
 
 ## MVP definition
 
@@ -135,7 +151,8 @@ tests/                  Foundation, ingestion, sample-contract, and CLI tests
 
 This milestone does not include conversational RAG, answer generation, an LLM
 interface, agents, a web UI or framework, cloud services, model downloads,
-semantic reranking, hybrid search, background watchers, OCR, or handwritten
-notes. The feature-hashing vectors provide deliberately small lexical retrieval
-for milestone verification; the isolated embedding interface allows a future
-local semantic model to replace them.
+semantic reranking, hybrid search, the five-question real-journal evaluation,
+background watchers, OCR, or handwritten notes. The feature-hashing vectors
+provide deliberately small lexical retrieval for milestone verification; the
+isolated embedding interface allows a future local semantic model to replace
+them.
