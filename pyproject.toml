@@ -10,6 +10,9 @@ readme = "README.md"
 requires-python = ">=3.14,<3.15"
 dependencies = []
 
+[project.scripts]
+second-mind = "second_mind.app:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
 

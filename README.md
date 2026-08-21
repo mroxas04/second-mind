@@ -5,9 +5,39 @@ entries into grounded answers with dates and source citations.
 
 ## Current status
 
-The October five-question retrieval evaluation milestone builds on the
-completed typed-ingestion, local-indexing, and cited-retrieval foundations.
-The public Markdown loading functions remain:
+The November MVP v0.1 stabilization milestone adds a single repeatable local
+workflow on top of the completed ingestion, indexing, cited retrieval, and
+five-question evaluation foundations.
+
+## Quick start
+
+Refresh the local index and ask one or more questions in the same command:
+
+```bash
+python -m second_mind data/sample_journals \
+  --question "What reserved book did I pick up?" \
+  --question "Which mountain trail did I hike?"
+```
+
+The command indexes new or changed journal chunks, skips unchanged chunks on
+later runs, returns the top supporting passage unchanged as a conservative
+grounded answer, and prints its date/source/title/chunk citation. A question
+without supporting evidence prints an explicit refusal and still exits
+successfully because refusing is expected MVP behavior. Use `--index PATH` for
+a separate local SQLite index; the default remains
+`data/indexes/journals.sqlite3`.
+
+After installing the editable project, the same workflow is available as:
+
+```bash
+second-mind data/sample_journals \
+  --question "What reserved book did I pick up?"
+```
+
+## Component commands
+
+The lower-level commands remain available for inspection and diagnostics. The
+public Markdown loading functions are:
 
 ```python
 load_journal(path: Path) -> JournalEntry
@@ -64,8 +94,9 @@ The retrieval command accepts `--index`, `--limit`, and `--minimum-score`. It
 ignores common question words and requires an informative term to overlap the
 source text, preventing feature-hash collisions from surfacing unsupported
 passages. It exits with status 1 instead of returning zero-evidence passages.
-This milestone retrieves cited source text only; it does not synthesize an
-answer.
+The retrieval component returns cited source text only. The stabilized MVP
+workflow uses the top passage unchanged as its answer; it does not perform
+abstractive synthesis.
 
 Run the committed privacy-safe scorecard against the fictional sample journals:
 
@@ -81,15 +112,15 @@ insufficient-evidence refusal. It exits with status 1 if any applicable check
 fails. The committed scorecard contains four evidence-positive questions and
 one refusal question; it never requires private journal content.
 
-## MVP definition
+## MVP v0.1 capabilities
 
-The eventual local MVP will:
+The local MVP can:
 
 - Ingest local typed journal files.
 - Automatically chunk, embed, and index entries.
 - Accept natural-language questions.
 - Retrieve relevant journal passages.
-- Generate grounded answers.
+- Return conservative extractive answers grounded in retrieved passages.
 - Cite source entries and dates.
 - Refuse to answer when evidence is insufficient.
 - Run locally.
@@ -163,10 +194,10 @@ tests/                  Foundation, ingestion, sample-contract, and CLI tests
 
 ## Current non-goals
 
-This milestone does not include conversational RAG, answer generation, an LLM
-interface, agents, a web UI or framework, cloud services, model downloads,
-semantic reranking, hybrid search, real or private journal evaluation,
-background watchers, OCR, or handwritten notes. The feature-hashing vectors
-provide deliberately small lexical retrieval for milestone verification; the
-isolated embedding interface allows a future local semantic model to replace
-them.
+This milestone does not include conversational RAG, abstractive answer
+synthesis, an LLM interface, agents, a web UI or framework, cloud services,
+model downloads, semantic reranking, hybrid search, real or private journal
+evaluation, usage logging, background watchers, OCR, or handwritten notes. The
+feature-hashing vectors provide deliberately small lexical retrieval for
+milestone verification; the isolated embedding interface allows a future local
+semantic model to replace them.
