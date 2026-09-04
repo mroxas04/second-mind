@@ -20,7 +20,7 @@ The MVP must:
 - Run locally.
 - Pass a five-question retrieval test.
 
-## Current milestone
+## Current milestones
 
 The current January method-formation milestone builds directly on the stable,
 locally backed-up MVP and is limited to:
@@ -37,6 +37,10 @@ locally backed-up MVP and is limited to:
 - Reporting progress toward ten uses and ranking up to three failure categories
   by observed frequency.
 - Testing the logger and report offline with synthetic outcome records only.
+
+The approved handwritten-import milestone may proceed independently. It adds a
+local-only, review-required OCR staging path outside the typed-journal library;
+M030 remains incomplete until ten real-use outcomes are recorded.
 
 The public usage-evidence interfaces are:
 
@@ -152,11 +156,10 @@ conda env update -f environment.yml --prune
 
 Tests may inspect synthetic samples but must never inspect private journal files.
 
-## Explicit non-goals for the current milestone
+## Explicit non-goals for the current milestones
 
-Do not add or implement:
+Do not add or implement outside the approved handwritten-import plan:
 
-- OCR or image processing.
 - An LLM interface or model integration.
 - Agents or orchestration.
 - A web framework, API server, or web UI.

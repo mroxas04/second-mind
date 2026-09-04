@@ -213,6 +213,20 @@ optional title, body, and source path.
 - Embedding, persistence, and querying run locally without cloud services,
   telemetry, hosted APIs, or journal-data transmission.
 
+## Handwritten imports
+
+Handwritten pages use a deliberate local workflow. Scan a page with the iPhone
+document scanner, transfer it locally to the active Mac, then create a draft
+with the handwritten-import command. macOS Vision runs on-device; the original
+scan, private state, and editable draft remain in the ignored
+`handwritten_import/` workspace.
+
+Review and correct the draft before explicitly approving it. Approval writes a
+normal dated Markdown journal entry but does not refresh the index. Run the
+existing index command afterward when you decide the approved entry should be
+searchable. This first version has no background watcher, cloud fallback,
+automatic cleanup, or phone-to-computer synchronization.
+
 ## Environment
 
 Create and activate the Python 3.14 Conda environment:
@@ -248,6 +262,7 @@ data/sample_journals/   Synthetic, version-controlled journal fixtures
 data/private_journals/  Ignored location for real local journal entries
 data/indexes/           Ignored local SQLite indexes
 data/usage/             Ignored non-sensitive local outcome records
+handwritten_import/     Ignored local scan, draft, and import-state workspace
 src/second_mind/        Ingestion, retrieval, backup logic, and CLIs
 tests/                  Foundation, ingestion, sample-contract, and CLI tests
 ```
