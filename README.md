@@ -59,10 +59,20 @@ python -m second_mind.backup verify \
   /path/to/local/backups/second-mind-YYYYMMDDTHHMMSSZ
 ```
 
-After editable installation, `second-mind-backup` provides the same `create`
-and `verify` subcommands. Store real-journal snapshots only on a trusted local
-or encrypted external volume. Full restore automation and a clean restore
-rehearsal remain intentionally deferred to M059.
+Rehearse a clean restore into a new directory (the destination must not exist):
+
+```bash
+python -m second_mind.backup restore \
+  /path/to/local/backups/second-mind-YYYYMMDDTHHMMSSZ \
+  /path/to/restore-rehearsal
+```
+
+Restore verifies the snapshot before copying and verifies the restored files
+afterward. It never overwrites an existing destination.
+
+After editable installation, `second-mind-backup` provides the same `create`,
+`verify`, and `restore` subcommands. Store real-journal snapshots only on a
+trusted local or encrypted external volume.
 
 ## Privacy-safe usage evidence
 

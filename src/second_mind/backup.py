@@ -45,6 +45,15 @@ class BackupVerification:
         return not self.errors
 
 
+@dataclass(frozen=True, slots=True)
+class RestoreSummary:
+    """Details of one restored local snapshot."""
+
+    restore_path: Path
+    files: int
+    bytes_restored: int
+
+
 def create_backup(
     journal_directory: Path,
     destination: Path,
@@ -145,6 +154,36 @@ def verify_backup(snapshot_path: Path) -> BackupVerification:
     )
 
 
+def restore_backup(snapshot_path: Path, destination: Path) -> RestoreSummary:
+    """Restore a verified snapshot into a new, isolated directory."""
+    snapshot_path = _require_directory(snapshot_path, "backup snapshot")
+    verification = verify_backup(snapshot_path)
+    if not verification.valid:
+        raise ValueError("backup verification failed: " + "; ".join(verification.errors))
+    destination = destination.expanduser().resolve()
+    if destination.exists():
+        raise FileExistsError(f"restore destination already exists: {destination}")
+    destination.mkdir(parents=True)
+    manifest = json.loads((snapshot_path / MANIFEST_FILENAME).read_text(encoding="utf-8"))
+    records = _validate_manifest(manifest)
+    try:
+        for record in records:
+            relative = PurePosixPath(record["path"])
+            source = snapshot_path.joinpath(*relative.parts)
+            target = destination.joinpath(*relative.parts)
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, target)
+        shutil.copy2(snapshot_path / MANIFEST_FILENAME, destination / MANIFEST_FILENAME)
+    except Exception:
+        shutil.rmtree(destination)
+        raise
+    restored = verify_backup(destination)
+    if not restored.valid:
+        shutil.rmtree(destination)
+        raise ValueError("restored backup verification failed: " + "; ".join(restored.errors))
+    return RestoreSummary(destination, restored.files, restored.bytes_checked)
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     """Create or verify a local backup snapshot from the command line."""
 
@@ -167,6 +206,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     verify_parser = subparsers.add_parser("verify", help="verify a local snapshot")
     verify_parser.add_argument("snapshot", type=Path)
 
+    restore_parser = subparsers.add_parser("restore", help="restore into a new directory")
+    restore_parser.add_argument("snapshot", type=Path)
+    restore_parser.add_argument("destination", type=Path)
+
     arguments = parser.parse_args(argv)
     try:
         if arguments.command == "create":
@@ -182,6 +225,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
             return 0
 
+        if arguments.command == "restore":
+            summary = restore_backup(arguments.snapshot, arguments.destination)
+            print(f"restore={summary.restore_path} | files={summary.files} | bytes={summary.bytes_restored} | verified=yes")
+            return 0
         verification = verify_backup(arguments.snapshot)
     except (OSError, sqlite3.Error, ValueError) as error:
         print(f"error: {error}", file=sys.stderr)
