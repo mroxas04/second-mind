@@ -3,10 +3,14 @@
 !/data/private_journals/.gitkeep
 /notes/
 
+# Local handwritten-journal scans, drafts, and private state
+/handwritten_import/
+
 # Generated indexes and model artifacts
 /data/generated/
 /data/indexes/
 /data/models/
+/data/usage/
 /indexes/
 /models/
 *.ann

@@ -13,6 +13,7 @@ dependencies = []
 [project.scripts]
 second-mind = "second_mind.app:main"
 second-mind-backup = "second_mind.backup:main"
+second-mind-usage = "second_mind.usage:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

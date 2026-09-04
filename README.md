@@ -5,9 +5,10 @@ entries into grounded answers with dates and source citations.
 
 ## Current status
 
-The December maintenance milestone adds a repeatable, verified local backup
-workflow on top of the stabilized MVP. Backup destinations remain an explicit
-user choice; Second Mind does not select or transmit data to a cloud service.
+The January method-formation milestone adds an opt-in, privacy-safe way to log
+real-use outcomes and rank recurring failure categories. The local log stores
+only a timestamp and one fixed category; it has no field for journal content,
+questions, answers, citations, source paths, or free-form notes.
 
 ## Quick start
 
@@ -62,6 +63,35 @@ After editable installation, `second-mind-backup` provides the same `create`
 and `verify` subcommands. Store real-journal snapshots only on a trusted local
 or encrypted external volume. Full restore automation and a clean restore
 rehearsal remain intentionally deferred to M059.
+
+## Privacy-safe usage evidence
+
+After each real use, record exactly one outcome category without copying the
+question, answer, citation, journal text, filename, title, or personal notes:
+
+```bash
+python -m second_mind.usage categories
+
+python -m second_mind.usage record correct-answer
+python -m second_mind.usage record wrong-passage
+python -m second_mind.usage record incorrect-refusal
+```
+
+The default log is `data/usage/outcomes.jsonl`, which Git ignores. You can use
+`--log PATH` before the subcommand to choose another local file. The record
+format is intentionally strict and rejects extra or free-form fields.
+
+Check progress and rank up to three recurring failure categories:
+
+```bash
+python -m second_mind.usage report
+```
+
+The report shows how many of the ten required uses remain and prints provisional
+failure rankings while evidence is still accumulating. Once ten real uses
+exist, it marks the evidence ready; the three most frequent failure categories
+are then the milestone priorities. After editable installation, the same
+commands are available through `second-mind-usage`.
 
 ## Component commands
 
@@ -183,6 +213,20 @@ optional title, body, and source path.
 - Embedding, persistence, and querying run locally without cloud services,
   telemetry, hosted APIs, or journal-data transmission.
 
+## Handwritten imports
+
+Handwritten pages use a deliberate local workflow. Scan a page with the iPhone
+document scanner, transfer it locally to the active Mac, then create a draft
+with the handwritten-import command. macOS Vision runs on-device; the original
+scan, private state, and editable draft remain in the ignored
+`handwritten_import/` workspace.
+
+Review and correct the draft before explicitly approving it. Approval writes a
+normal dated Markdown journal entry but does not refresh the index. Run the
+existing index command afterward when you decide the approved entry should be
+searchable. This first version has no background watcher, cloud fallback,
+automatic cleanup, or phone-to-computer synchronization.
+
 ## Environment
 
 Create and activate the Python 3.14 Conda environment:
@@ -217,17 +261,20 @@ runtime dependencies.
 data/sample_journals/   Synthetic, version-controlled journal fixtures
 data/private_journals/  Ignored location for real local journal entries
 data/indexes/           Ignored local SQLite indexes
+data/usage/             Ignored non-sensitive local outcome records
+handwritten_import/     Ignored local scan, draft, and import-state workspace
 src/second_mind/        Ingestion, retrieval, backup logic, and CLIs
 tests/                  Foundation, ingestion, sample-contract, and CLI tests
 ```
 
 ## Current non-goals
 
-This milestone does not include restore automation, a clean restore rehearsal,
-scheduled/background backups, cloud storage, encryption or key management,
-conversational RAG, abstractive answer synthesis, an LLM interface, agents, a
-web UI or framework, model downloads, semantic reranking, hybrid search, real
-or private journal evaluation, usage logging, background watchers, OCR, or
-handwritten notes. The feature-hashing vectors provide deliberately small
-lexical retrieval for milestone verification; the isolated embedding interface
-allows a future local semantic model to replace them.
+This milestone does not include automatic or background usage tracking,
+question/answer logging, source-path logging, free-form notes, journal-content
+inspection, restore automation, a clean restore rehearsal, scheduled backups,
+cloud storage, encryption or key management, conversational RAG, abstractive
+answer synthesis, an LLM interface, agents, a web UI or framework, model
+downloads, semantic reranking, hybrid search, OCR, or handwritten notes. The
+feature-hashing vectors provide deliberately small lexical retrieval for
+milestone verification; the isolated embedding interface allows a future local
+semantic model to replace them.
