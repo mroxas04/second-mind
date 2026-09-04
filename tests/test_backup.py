@@ -5,7 +5,7 @@ import sqlite3
 
 import pytest
 
-from second_mind.backup import create_backup, verify_backup
+from second_mind.backup import create_backup, restore_backup, verify_backup
 
 
 def write_backup_inputs(tmp_path: Path) -> tuple[Path, Path]:
@@ -78,6 +78,15 @@ def test_verify_backup_detects_changed_file(tmp_path: Path) -> None:
     assert verification.errors == (
         "size mismatch: journals/2026-12-02-library.md",
     )
+
+
+def test_restore_backup_recreates_verified_snapshot(tmp_path: Path) -> None:
+    journals, index_path = write_backup_inputs(tmp_path)
+    summary = create_backup(journals, tmp_path / "backups", index_path, snapshot_name="snapshot")
+    restored = restore_backup(summary.snapshot_path, tmp_path / "restored")
+    assert restored.files == 3
+    assert (restored.restore_path / "journals/2026-12-02-library.md").read_text(encoding="utf-8").startswith("# Fictional")
+    assert verify_backup(restored.restore_path).valid
 
 
 def test_create_backup_never_overwrites_snapshot(tmp_path: Path) -> None:

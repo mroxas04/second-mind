@@ -60,6 +60,13 @@ def test_cli_creates_then_verifies_snapshot(tmp_path: Path) -> None:
     assert "files=2" in verified.stdout
     assert "verified=yes" in verified.stdout
 
+    restored = run_backup("restore", str(snapshot), str(tmp_path / "restored"))
+    assert restored.returncode == 0
+    assert restored.stderr == ""
+    assert "files=2" in restored.stdout
+    assert "verified=yes" in restored.stdout
+    assert (tmp_path / "restored/manifest.json").is_file()
+
 
 def test_cli_reports_invalid_snapshot(tmp_path: Path) -> None:
     result = run_backup("verify", str(tmp_path / "missing"))
